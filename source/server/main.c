@@ -1,4 +1,3 @@
-#include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -59,6 +58,8 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
+	logger_init();
+
 	if(argc >= 3 && !strcmp(argv[1], "-p")){
 		PORT = argv[2];
 	}
@@ -100,7 +101,7 @@ void route(oneM2MPrimitive *o2pt) {
 
 	if(o2pt->fc){
 		if(rsc = validate_filter_criteria(o2pt) > 4000){
-			return rsc;
+			return;
 		}
 	}
 
@@ -120,7 +121,7 @@ void route(oneM2MPrimitive *o2pt) {
 }
 
 int handle_onem2m_request(oneM2MPrimitive *o2pt, RTNode *target_rtnode){
-	logger("MAIN", LOG_LEVEL_INFO, "handle_onem2m_request");
+	logger("MAIN", LOG_LEVEL_DEBUG, "handle_onem2m_request");
 	int rsc = 0;
 
 	if(o2pt->op == OP_CREATE && o2pt->fc){
@@ -181,5 +182,7 @@ void stop_server(int sig){
 	free_all_resource(rt->cb);
 	free(rt);
 	logger("MAIN", LOG_LEVEL_INFO, "Done");
+
+	logger_free();
 	exit(0);
 }
